@@ -1,0 +1,5 @@
+---
+# vars file for sshd_config
+
+sshd_pkg_name: openssh-server
+sshd_config_basedir: /etc/ssh

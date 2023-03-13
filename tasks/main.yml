@@ -1,0 +1,27 @@
+---
+# tasks file for sshd_config
+
+- name: Include OS family variables
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Assure sshd configuration
+  ansible.builtin.template:
+    src: "{{ lookup('ansible.builtin.first_found', params) }}"
+    dest: "{{ sshd_config_basedir }}/sshd_config"
+    validate: "/usr/sbin/sshd -t -f %s"
+    owner: root
+    group: root
+    mode: 0600
+  vars:
+    params:
+      files:
+        - "{{ ansible_os_family }}.j2"
+        - "sshd_config.j2"
+      paths: "{{ role_path }}/templates"
+  notify:
+    - Restart sshd
+
+- name: Assure sshd is enabled
+  ansible.builtin.service:
+    name: sshd
+    enabled: true
